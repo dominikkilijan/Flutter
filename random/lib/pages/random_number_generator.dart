@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'password_generator.dart'; // Importujemy PasswordScreen dla nawigacji
+import 'package:flutter/services.dart';
+import 'password_generator.dart';
 
 class RandomNumberGenerator extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class RandomNumberGenerator extends StatefulWidget {
 class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
   int? _randomNumber;
   bool _evenOnly = false;
+  bool _oddOnly = false;
   int _minValue = 1;
   int _maxValue = 100;
 
@@ -21,10 +23,22 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
 
   void _generateRandomNumber() {
     setState(() {
+      // Upewnij się, że wartości mieszczą się w określonych granicach
+      _minValue = _minValue.clamp(-999999, 9999999);
+      _maxValue = _maxValue.clamp(-999999, 9999999);
+
+      // Jeśli Min jest większe niż Max, zamień wartości miejscami
+      if (_minValue > _maxValue) {
+        int temp = _minValue;
+        _minValue = _maxValue;
+        _maxValue = temp;
+      }
+
+      // Generuj liczbę w zakresie
       int number;
       do {
         number = Random().nextInt(_maxValue - _minValue + 1) + _minValue;
-      } while (_evenOnly && number % 2 != 0);
+      } while ((_evenOnly && number % 2 != 0) || (_oddOnly && number % 2 == 0));
       _randomNumber = number;
     });
   }
@@ -69,26 +83,48 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
             SizedBox(height: 30),
             Expanded(
               child: Center(
-                child: Text(
-                  _randomNumber != null ? '$_randomNumber' : '',
+                child: SelectableText(
+                  _randomNumber != null ? '$_randomNumber' : '0',
                   style: TextStyle(fontSize: 84, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
             Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
                   children: [
-                    Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
-                    Switch(
-                      value: _evenOnly,
-                      activeColor: Colors.green,
-                      onChanged: (value) {
-                        setState(() {
-                          _evenOnly = value;
-                        });
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
+                        Switch(
+                          value: _evenOnly,
+                          activeColor: Colors.green,
+                          onChanged: (value) {
+                            setState(() {
+                              _evenOnly = value;
+                              if (value) _oddOnly = false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Tylko nieparzyste", style: TextStyle(fontSize: 20)),
+                        Switch(
+                          value: _oddOnly,
+                          activeColor: Colors.green,
+                          onChanged: (value) {
+                            setState(() {
+                              _oddOnly = value;
+                              if (value) _evenOnly = false;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -103,6 +139,10 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: _minLabelClicked ? "Min" : "Min = 1",
+                          labelStyle: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
+                          ),
                         ),
                         onTap: () {
                           if (!_minLabelClicked) {
@@ -114,6 +154,20 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         onChanged: (value) {
                           setState(() {
                             _minValue = int.tryParse(value) ?? 1;
+                            _minValue = _minValue.clamp(-999999, 9999999);
+
+                            // Jeśli Min jest większe niż Max, zamień wartości miejscami
+                            if (_minValue > _maxValue) {
+                              int temp = _minValue;
+                              _minValue = _maxValue;
+                              _maxValue = temp;
+
+                              // Aktualizuj także pola tekstowe
+                              _minController.text = '$_minValue';
+                              _maxController.text = '$_maxValue';
+                            } else {
+                              _minController.text = '$_minValue';
+                            }
                           });
                         },
                       ),
@@ -125,6 +179,10 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: _maxLabelClicked ? "Max" : "Max = 100",
+                          labelStyle: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
+                          ),
                         ),
                         onTap: () {
                           if (!_maxLabelClicked) {
@@ -136,6 +194,20 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         onChanged: (value) {
                           setState(() {
                             _maxValue = int.tryParse(value) ?? 100;
+                            _maxValue = _maxValue.clamp(-999999, 9999999);
+
+                            // Jeśli Min jest większe niż Max, zamień wartości miejscami
+                            if (_minValue > _maxValue) {
+                              int temp = _minValue;
+                              _minValue = _maxValue;
+                              _maxValue = temp;
+
+                              // Aktualizuj także pola tekstowe
+                              _minController.text = '$_minValue';
+                              _maxController.text = '$_maxValue';
+                            } else {
+                              _maxController.text = '$_maxValue';
+                            }
                           });
                         },
                       ),

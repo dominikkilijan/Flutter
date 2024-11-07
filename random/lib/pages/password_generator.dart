@@ -11,6 +11,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   int _passwordLength = 12;
   bool _includeUppercase = true;
   bool _includeLowercase = true;
+  bool _includeNumbers = true;
   bool _includeSpecialCharacters = true;
 
   String _generatePassword() {
@@ -22,7 +23,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
     if (_includeUppercase) chars += uppercase;
     if (_includeLowercase) chars += lowercase;
-    chars += numbers;
+    if (_includeNumbers) chars += numbers;
     if (_includeSpecialCharacters) chars += special;
 
     return List.generate(
@@ -34,6 +35,44 @@ class _PasswordScreenState extends State<PasswordScreen> {
   void _generateNewPassword() {
     setState(() {
       _password = _generatePassword();
+    });
+  }
+
+  void _toggleSwitch(bool value, String type) {
+    setState(() {
+      switch (type) {
+        case 'uppercase':
+          _includeUppercase = value;
+          break;
+        case 'lowercase':
+          _includeLowercase = value;
+          break;
+        case 'numbers':
+          _includeNumbers = value;
+          break;
+        case 'special':
+          _includeSpecialCharacters = value;
+          break;
+      }
+
+      // Sprawdź, czy co najmniej jeden przełącznik jest włączony
+      if (!(_includeUppercase || _includeLowercase || _includeNumbers || _includeSpecialCharacters)) {
+        // Jeśli wszystkie są wyłączone, ponownie włącz ostatni zmodyfikowany przełącznik
+        switch (type) {
+          case 'uppercase':
+            _includeUppercase = true;
+            break;
+          case 'lowercase':
+            _includeLowercase = true;
+            break;
+          case 'numbers':
+            _includeNumbers = true;
+            break;
+          case 'special':
+            _includeSpecialCharacters = true;
+            break;
+        }
+      }
     });
   }
 
@@ -64,8 +103,8 @@ class _PasswordScreenState extends State<PasswordScreen> {
             SizedBox(height: 30),
             Expanded(
               child: Center(
-                child: Text(
-                  _password ?? '',
+                child: SelectableText(
+                  _password ?? 'Haslo123',
                   style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -99,14 +138,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Wielkie litery", style: TextStyle(fontSize: 20)),
+                    Text("Liczby", style: TextStyle(fontSize: 20)),
                     Switch(
-                      value: _includeUppercase,
-                      onChanged: (value) {
-                        setState(() {
-                          _includeUppercase = value;
-                        });
-                      },
+                      value: _includeNumbers,
+                      onChanged: (value) => _toggleSwitch(value, 'numbers'),
                       activeColor: Colors.brown,
                     ),
                   ],
@@ -117,11 +152,18 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     Text("Małe litery", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeLowercase,
-                      onChanged: (value) {
-                        setState(() {
-                          _includeLowercase = value;
-                        });
-                      },
+                      onChanged: (value) => _toggleSwitch(value, 'lowercase'),
+                      activeColor: Colors.brown,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Wielkie litery", style: TextStyle(fontSize: 20)),
+                    Switch(
+                      value: _includeUppercase,
+                      onChanged: (value) => _toggleSwitch(value, 'uppercase'),
                       activeColor: Colors.brown,
                     ),
                   ],
@@ -132,11 +174,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     Text("Znaki specjalne", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeSpecialCharacters,
-                      onChanged: (value) {
-                        setState(() {
-                          _includeSpecialCharacters = value;
-                        });
-                      },
+                      onChanged: (value) => _toggleSwitch(value, 'special'),
                       activeColor: Colors.brown,
                     ),
                   ],
