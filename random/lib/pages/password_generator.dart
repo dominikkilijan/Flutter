@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'random_number_generator.dart';
 
 class PasswordScreen extends StatefulWidget {
   @override
@@ -13,6 +14,20 @@ class _PasswordScreenState extends State<PasswordScreen> {
   bool _includeLowercase = true;
   bool _includeNumbers = true;
   bool _includeSpecialCharacters = true;
+
+  final TextEditingController _passwordLengthController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordLengthController.text = '$_passwordLength';
+  }
+
+  @override
+  void dispose() {
+    _passwordLengthController.dispose();
+    super.dispose();
+  }
 
   String _generatePassword() {
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -55,9 +70,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
           break;
       }
 
-      // Sprawdź, czy co najmniej jeden przełącznik jest włączony
       if (!(_includeUppercase || _includeLowercase || _includeNumbers || _includeSpecialCharacters)) {
-        // Jeśli wszystkie są wyłączone, ponownie włącz ostatni zmodyfikowany przełącznik
         switch (type) {
           case 'uppercase':
             _includeUppercase = true;
@@ -81,25 +94,39 @@ class _PasswordScreenState extends State<PasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Generator Hasła",
           style: TextStyle(fontSize: 24),
         ),
         backgroundColor: Colors.brown,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.numbers),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RandomNumberGenerator(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+                child: Text(
+                  'Generuj liczbę',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
             SizedBox(height: 30),
             Expanded(
               child: Center(
@@ -121,7 +148,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                       width: 80,
                       child: TextField(
                         keyboardType: TextInputType.number,
-                        controller: TextEditingController(text: '$_passwordLength'),
+                        controller: _passwordLengthController,
                         onChanged: (value) {
                           setState(() {
                             _passwordLength = int.tryParse(value) ?? 12;

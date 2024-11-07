@@ -48,6 +48,7 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Generator Liczb',
           style: TextStyle(fontSize: 24),
