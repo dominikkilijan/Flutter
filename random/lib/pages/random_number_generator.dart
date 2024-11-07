@@ -1,14 +1,14 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'password_generator.dart';
 
 class RandomNumberGenerator extends StatefulWidget {
+  const RandomNumberGenerator({super.key});
   @override
-  _RandomNumberGeneratorState createState() => _RandomNumberGeneratorState();
+  RandomNumberGeneratorState createState() => RandomNumberGeneratorState();
 }
 
-class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
+class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
   int? _randomNumber;
   bool _evenOnly = false;
   bool _oddOnly = false;
@@ -18,23 +18,40 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
   final TextEditingController _minController = TextEditingController();
   final TextEditingController _maxController = TextEditingController();
 
-  bool _minLabelClicked = false;
-  bool _maxLabelClicked = false;
+  @override
+  void initState() {
+    super.initState();
+    _minController.text = '$_minValue';
+    _maxController.text = '$_maxValue';
+  }
 
   void _generateRandomNumber() {
     setState(() {
-      // Upewnij się, że wartości mieszczą się w określonych granicach
+      // Pobieramy wartości z pól tekstowych
+      _minValue = int.tryParse(_minController.text) ?? 1;
+      _maxValue = int.tryParse(_maxController.text) ?? 100;
+
+      // Ograniczenie wartości do ustalonego zakresu
       _minValue = _minValue.clamp(-999999, 9999999);
       _maxValue = _maxValue.clamp(-999999, 9999999);
 
-      // Jeśli Min jest większe niż Max, zamień wartości miejscami
+      // Zamiana wartości, jeśli Min jest większy niż Max
       if (_minValue > _maxValue) {
         int temp = _minValue;
         _minValue = _maxValue;
         _maxValue = temp;
       }
 
-      // Generuj liczbę w zakresie
+      // Jeśli Min i Max są sobie równe, zwiększamy Max o 1
+      if (_minValue == _maxValue) {
+        _maxValue += 1;
+      }
+
+      // Aktualizujemy pola tekstowe, aby pokazać poprawione wartości
+      _minController.text = '$_minValue';
+      _maxController.text = '$_maxValue';
+
+      // Generowanie liczby w poprawionym zakresie
       int number;
       do {
         number = Random().nextInt(_maxValue - _minValue + 1) + _minValue;
@@ -49,9 +66,9 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Generator Liczb',
-          style: TextStyle(fontSize: 24),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),
         ),
         backgroundColor: Colors.green,
       ),
@@ -67,26 +84,26 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PasswordScreen(),
+                      builder: (context) => const PasswordScreen(),
                     ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
-                child: Text(
+                child: const Text(
                   'Generuj hasło',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Expanded(
               child: Center(
                 child: SelectableText(
                   _randomNumber != null ? '$_randomNumber' : '0',
-                  style: TextStyle(fontSize: 84, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 84, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -98,7 +115,7 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
+                        const Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
                         Switch(
                           value: _evenOnly,
                           activeColor: Colors.green,
@@ -114,7 +131,7 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Tylko nieparzyste", style: TextStyle(fontSize: 20)),
+                        const Text("Tylko nieparzyste", style: TextStyle(fontSize: 20)),
                         Switch(
                           value: _oddOnly,
                           activeColor: Colors.green,
@@ -129,8 +146,8 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
-                Text("Zakres liczb:", style: TextStyle(fontSize: 20)),
+                const SizedBox(height: 10),
+                const Text("Zakres liczb:", style: TextStyle(fontSize: 20)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -138,102 +155,50 @@ class _RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                       child: TextField(
                         controller: _minController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: _minLabelClicked ? "Min" : "Min = 1",
+                        decoration: const InputDecoration(
+                          labelText: "Min",
                           labelStyle: TextStyle(
                             fontSize: 20,
                             color: Colors.grey,
                           ),
                         ),
-                        onTap: () {
-                          if (!_minLabelClicked) {
-                            setState(() {
-                              _minLabelClicked = true;
-                            });
-                          }
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            _minValue = int.tryParse(value) ?? 1;
-                            _minValue = _minValue.clamp(-999999, 9999999);
-
-                            // Jeśli Min jest większe niż Max, zamień wartości miejscami
-                            if (_minValue > _maxValue) {
-                              int temp = _minValue;
-                              _minValue = _maxValue;
-                              _maxValue = temp;
-
-                              // Aktualizuj także pola tekstowe
-                              _minController.text = '$_minValue';
-                              _maxController.text = '$_maxValue';
-                            } else {
-                              _minController.text = '$_minValue';
-                            }
-                          });
-                        },
                       ),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     Flexible(
                       child: TextField(
                         controller: _maxController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: _maxLabelClicked ? "Max" : "Max = 100",
+                        decoration: const InputDecoration(
+                          labelText: "Max",
                           labelStyle: TextStyle(
                             fontSize: 20,
                             color: Colors.grey,
                           ),
                         ),
-                        onTap: () {
-                          if (!_maxLabelClicked) {
-                            setState(() {
-                              _maxLabelClicked = true;
-                            });
-                          }
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            _maxValue = int.tryParse(value) ?? 100;
-                            _maxValue = _maxValue.clamp(-999999, 9999999);
-
-                            // Jeśli Min jest większe niż Max, zamień wartości miejscami
-                            if (_minValue > _maxValue) {
-                              int temp = _minValue;
-                              _minValue = _maxValue;
-                              _maxValue = temp;
-
-                              // Aktualizuj także pola tekstowe
-                              _minController.text = '$_minValue';
-                              _maxController.text = '$_maxValue';
-                            } else {
-                              _maxController.text = '$_maxValue';
-                            }
-                          });
-                        },
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _generateRandomNumber,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  textStyle: TextStyle(fontSize: 24),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  textStyle: const TextStyle(fontSize: 24),
                 ),
-                child: Text(
+                child: const Text(
                   'Generuj',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),

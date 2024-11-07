@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'random_number_generator.dart';
 
 class PasswordScreen extends StatefulWidget {
+  const PasswordScreen({super.key});
+
   @override
-  _PasswordScreenState createState() => _PasswordScreenState();
+  PasswordScreenState createState() => PasswordScreenState();
 }
 
-class _PasswordScreenState extends State<PasswordScreen> {
+class PasswordScreenState extends State<PasswordScreen> {
   String? _password;
-  int _passwordLength = 12;
+  int _passwordLength = 10;
   bool _includeUppercase = true;
   bool _includeLowercase = true;
   bool _includeNumbers = true;
@@ -95,9 +97,9 @@ class _PasswordScreenState extends State<PasswordScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           "Generator Hasła",
-          style: TextStyle(fontSize: 24),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),
         ),
         backgroundColor: Colors.brown,
       ),
@@ -113,26 +115,26 @@ class _PasswordScreenState extends State<PasswordScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RandomNumberGenerator(),
+                      builder: (context) => const RandomNumberGenerator(),
                     ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
-                child: Text(
+                child: const Text(
                   'Generuj liczbę',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Expanded(
               child: Center(
                 child: SelectableText(
                   _password ?? 'Haslo123',
-                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 44, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -142,8 +144,8 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Długość hasła:", style: TextStyle(fontSize: 20)),
-                    SizedBox(width: 10),
+                    const Text("Długość hasła:", style: TextStyle(fontSize: 20)),
+                    const SizedBox(width: 10),
                     SizedBox(
                       width: 80,
                       child: TextField(
@@ -154,7 +156,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                             _passwordLength = int.tryParse(value) ?? 12;
                           });
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Długość',
                           border: OutlineInputBorder(),
                         ),
@@ -165,7 +167,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Liczby", style: TextStyle(fontSize: 20)),
+                    const Text("Liczby", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeNumbers,
                       onChanged: (value) => _toggleSwitch(value, 'numbers'),
@@ -176,7 +178,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Małe litery", style: TextStyle(fontSize: 20)),
+                    const Text("Małe litery", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeLowercase,
                       onChanged: (value) => _toggleSwitch(value, 'lowercase'),
@@ -187,7 +189,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Wielkie litery", style: TextStyle(fontSize: 20)),
+                    const Text("Wielkie litery", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeUppercase,
                       onChanged: (value) => _toggleSwitch(value, 'uppercase'),
@@ -198,7 +200,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Znaki specjalne", style: TextStyle(fontSize: 20)),
+                    const Text("Znaki specjalne", style: TextStyle(fontSize: 20)),
                     Switch(
                       value: _includeSpecialCharacters,
                       onChanged: (value) => _toggleSwitch(value, 'special'),
@@ -208,23 +210,23 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _generateNewPassword,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  textStyle: TextStyle(fontSize: 24),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  textStyle: const TextStyle(fontSize: 24),
                 ),
-                child: Text(
+                child: const Text(
                   'Generuj',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
