@@ -27,31 +27,25 @@ class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
 
   void _generateRandomNumber() {
     setState(() {
-      // Pobieramy wartości z pól tekstowych
       _minValue = int.tryParse(_minController.text) ?? 1;
       _maxValue = int.tryParse(_maxController.text) ?? 100;
 
-      // Ograniczenie wartości do ustalonego zakresu
       _minValue = _minValue.clamp(-999999, 9999999);
       _maxValue = _maxValue.clamp(-999999, 9999999);
 
-      // Zamiana wartości, jeśli Min jest większy niż Max
       if (_minValue > _maxValue) {
         int temp = _minValue;
         _minValue = _maxValue;
         _maxValue = temp;
       }
 
-      // Jeśli Min i Max są sobie równe, zwiększamy Max o 1
       if (_minValue == _maxValue) {
         _maxValue += 1;
       }
 
-      // Aktualizujemy pola tekstowe, aby pokazać poprawione wartości
       _minController.text = '$_minValue';
       _maxController.text = '$_maxValue';
 
-      // Generowanie liczby w poprawionym zakresie
       int number;
       do {
         number = Random().nextInt(_maxValue - _minValue + 1) + _minValue;

@@ -12,12 +12,15 @@ class PasswordScreen extends StatefulWidget {
 class PasswordScreenState extends State<PasswordScreen> {
   String? _password;
   int _passwordLength = 10;
-  bool _includeUppercase = true;
-  bool _includeLowercase = true;
-  bool _includeNumbers = true;
-  bool _includeSpecialCharacters = true;
 
   final TextEditingController _passwordLengthController = TextEditingController();
+
+  final Map<String, bool> _options = {
+    'uppercase': true,
+    'lowercase': true,
+    'numbers': true,
+    'special': true,
+  };
 
   @override
   void initState() {
@@ -38,14 +41,14 @@ class PasswordScreenState extends State<PasswordScreen> {
     const special = '!@#\$%^&*()';
     String chars = '';
 
-    if (_includeUppercase) chars += uppercase;
-    if (_includeLowercase) chars += lowercase;
-    if (_includeNumbers) chars += numbers;
-    if (_includeSpecialCharacters) chars += special;
+    if (_options['uppercase']!) chars += uppercase;
+    if (_options['lowercase']!) chars += lowercase;
+    if (_options['numbers']!) chars += numbers;
+    if (_options['special']!) chars += special;
 
     return List.generate(
       _passwordLength,
-          (index) => chars[Random().nextInt(chars.length)],
+          (_) => chars[Random().nextInt(chars.length)],
     ).join();
   }
 
@@ -55,38 +58,12 @@ class PasswordScreenState extends State<PasswordScreen> {
     });
   }
 
-  void _toggleSwitch(bool value, String type) {
+  void _toggleSwitch(String type) {
     setState(() {
-      switch (type) {
-        case 'uppercase':
-          _includeUppercase = value;
-          break;
-        case 'lowercase':
-          _includeLowercase = value;
-          break;
-        case 'numbers':
-          _includeNumbers = value;
-          break;
-        case 'special':
-          _includeSpecialCharacters = value;
-          break;
-      }
+      _options[type] = !_options[type]!;
 
-      if (!(_includeUppercase || _includeLowercase || _includeNumbers || _includeSpecialCharacters)) {
-        switch (type) {
-          case 'uppercase':
-            _includeUppercase = true;
-            break;
-          case 'lowercase':
-            _includeLowercase = true;
-            break;
-          case 'numbers':
-            _includeNumbers = true;
-            break;
-          case 'special':
-            _includeSpecialCharacters = true;
-            break;
-        }
+      if (_options.values.every((value) => !value)) {
+        _options[type] = true;
       }
     });
   }
@@ -99,7 +76,7 @@ class PasswordScreenState extends State<PasswordScreen> {
         automaticallyImplyLeading: false,
         title: const Text(
           "Generator Hasła",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.brown,
       ),
@@ -153,7 +130,7 @@ class PasswordScreenState extends State<PasswordScreen> {
                         controller: _passwordLengthController,
                         onChanged: (value) {
                           setState(() {
-                            _passwordLength = int.tryParse(value) ?? 12;
+                            _passwordLength = int.tryParse(value) ?? 10;
                           });
                         },
                         decoration: const InputDecoration(
@@ -164,50 +141,10 @@ class PasswordScreenState extends State<PasswordScreen> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Liczby", style: TextStyle(fontSize: 20)),
-                    Switch(
-                      value: _includeNumbers,
-                      onChanged: (value) => _toggleSwitch(value, 'numbers'),
-                      activeColor: Colors.brown,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Małe litery", style: TextStyle(fontSize: 20)),
-                    Switch(
-                      value: _includeLowercase,
-                      onChanged: (value) => _toggleSwitch(value, 'lowercase'),
-                      activeColor: Colors.brown,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Wielkie litery", style: TextStyle(fontSize: 20)),
-                    Switch(
-                      value: _includeUppercase,
-                      onChanged: (value) => _toggleSwitch(value, 'uppercase'),
-                      activeColor: Colors.brown,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Znaki specjalne", style: TextStyle(fontSize: 20)),
-                    Switch(
-                      value: _includeSpecialCharacters,
-                      onChanged: (value) => _toggleSwitch(value, 'special'),
-                      activeColor: Colors.brown,
-                    ),
-                  ],
-                ),
+                _buildSwitch("Liczby", 'numbers'),
+                _buildSwitch("Małe litery", 'lowercase'),
+                _buildSwitch("Wielkie litery", 'uppercase'),
+                _buildSwitch("Znaki specjalne", 'special'),
               ],
             ),
             const SizedBox(height: 40),
@@ -230,6 +167,20 @@ class PasswordScreenState extends State<PasswordScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSwitch(String label, String type) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 20)),
+        Switch(
+          value: _options[type]!,
+          onChanged: (_) => _toggleSwitch(type),
+          activeColor: Colors.brown,
+        ),
+      ],
     );
   }
 }
