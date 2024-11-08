@@ -61,7 +61,6 @@ class PasswordScreenState extends State<PasswordScreen> {
   void _toggleSwitch(String type) {
     setState(() {
       _options[type] = !_options[type]!;
-
       if (_options.values.every((value) => !value)) {
         _options[type] = true;
       }
@@ -80,7 +79,7 @@ class PasswordScreenState extends State<PasswordScreen> {
         ),
         backgroundColor: Colors.brown,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,46 +106,41 @@ class PasswordScreenState extends State<PasswordScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            Expanded(
-              child: Center(
-                child: SelectableText(
-                  _password ?? 'Haslo123',
-                  style: const TextStyle(fontSize: 44, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
+            Center(
+              child: SelectableText(
+                _password ?? 'Haslo123',
+                style: const TextStyle(fontSize: 44, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
-            Column(
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Długość hasła:", style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: 80,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        controller: _passwordLengthController,
-                        onChanged: (value) {
-                          setState(() {
-                            _passwordLength = int.tryParse(value) ?? 10;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Długość',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                const Text("Długość hasła:", style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 80,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: _passwordLengthController,
+                    onChanged: (value) {
+                      setState(() {
+                        _passwordLength = int.tryParse(value) ?? 10;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Długość',
+                      border: OutlineInputBorder(),
                     ),
-                  ],
+                  ),
                 ),
-                _buildSwitch("Liczby", 'numbers'),
-                _buildSwitch("Małe litery", 'lowercase'),
-                _buildSwitch("Wielkie litery", 'uppercase'),
-                _buildSwitch("Znaki specjalne", 'special'),
               ],
             ),
+            _buildSwitch("Liczby", 'numbers'),
+            _buildSwitch("Małe litery", 'lowercase'),
+            _buildSwitch("Wielkie litery", 'uppercase'),
+            _buildSwitch("Znaki specjalne", 'special'),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,

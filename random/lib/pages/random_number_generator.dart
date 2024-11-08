@@ -62,11 +62,11 @@ class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
         automaticallyImplyLeading: false,
         title: const Text(
           'Generator Liczb',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.green,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,50 +93,44 @@ class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
               ),
             ),
             const SizedBox(height: 30),
-            Expanded(
-              child: Center(
-                child: SelectableText(
-                  _randomNumber != null ? '$_randomNumber' : '0',
-                  style: const TextStyle(fontSize: 84, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
+            Center(
+              child: SelectableText(
+                _randomNumber != null ? '$_randomNumber' : '0',
+                style: const TextStyle(fontSize: 84, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
             Column(
               children: [
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
-                        Switch(
-                          value: _evenOnly,
-                          activeColor: Colors.green,
-                          onChanged: (value) {
-                            setState(() {
-                              _evenOnly = value;
-                              if (value) _oddOnly = false;
-                            });
-                          },
-                        ),
-                      ],
+                    const Text("Tylko parzyste", style: TextStyle(fontSize: 20)),
+                    Switch(
+                      value: _evenOnly,
+                      activeColor: Colors.green,
+                      onChanged: (value) {
+                        setState(() {
+                          _evenOnly = value;
+                          if (value) _oddOnly = false;
+                        });
+                      },
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Tylko nieparzyste", style: TextStyle(fontSize: 20)),
-                        Switch(
-                          value: _oddOnly,
-                          activeColor: Colors.green,
-                          onChanged: (value) {
-                            setState(() {
-                              _oddOnly = value;
-                              if (value) _evenOnly = false;
-                            });
-                          },
-                        ),
-                      ],
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Tylko nieparzyste", style: TextStyle(fontSize: 20)),
+                    Switch(
+                      value: _oddOnly,
+                      activeColor: Colors.green,
+                      onChanged: (value) {
+                        setState(() {
+                          _oddOnly = value;
+                          if (value) _evenOnly = false;
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -151,10 +145,7 @@ class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: "Min",
-                          labelStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey,
-                          ),
+                          labelStyle: TextStyle(fontSize: 20, color: Colors.grey),
                         ),
                       ),
                     ),
@@ -165,10 +156,7 @@ class RandomNumberGeneratorState extends State<RandomNumberGenerator> {
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: "Max",
-                          labelStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey,
-                          ),
+                          labelStyle: TextStyle(fontSize: 20, color: Colors.grey),
                         ),
                       ),
                     ),
